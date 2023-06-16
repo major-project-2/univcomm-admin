@@ -35,8 +35,7 @@ function StudentList() {
     );
     setStudents(updatedStudents);
 
-    // Make the PATCH request to toggle the student's restriction status
-    fetch(`${server}/api/v1/users/deactivate/${studentId}`, {
+    fetch(`${server}/api/v1/users/activate/${studentId}`, {
       method: "PATCH",
     })
       .then((response) => response.json())
@@ -48,9 +47,9 @@ function StudentList() {
       });
   };
 
-  // if (!hasToken) {
-  //   return <div>No token available. Please authenticate first.</div>;
-  // }
+  if (!hasToken) {
+    return <div>No token available. Please authenticate first.</div>;
+  }
 
   if (!Array.isArray(students)) {
     return <div>Loading students...</div>;
@@ -68,7 +67,7 @@ function StudentList() {
                 color={student.restricted ? "primary" : "default"}
                 onClick={() => toggleRestricted(student.id)}
               >
-                {student.restricted ? "Restrict" : "Unrestrict"}
+                {student.restricted ? "Deactivate" : "Activate"}
               </Button>
             </ListItemSecondaryAction>
           </ListItem>

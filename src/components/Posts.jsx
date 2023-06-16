@@ -14,7 +14,8 @@ function AnnouncementForm() {
     console.log("Body:", announcement.body);
 
     // Make a POST request to create the announcement in the database
-    fetch(`${server}/api/create-announcement`, {
+
+    fetch(`${server}/api/announcements/`, {
       method: "POST",
       body: JSON.stringify(announcement),
       headers: {
