@@ -19,9 +19,15 @@ function StudentList() {
     setHasToken(!!token); // Check if token exists
 
     if (token) {
-      fetch(`${server}/api/v1/users`)
+      fetch(`${server}/api/v1/users/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
         .then((response) => response.json())
-        .then((data) => setStudents(data))
+        .then((data) => {
+          setStudents(data);
+        })
         .catch((error) => console.log("Error fetching students:", error));
     }
   }, []);
@@ -35,7 +41,8 @@ function StudentList() {
     );
     setStudents(updatedStudents);
 
-    fetch(`${server}/api/v1/users/activate/${studentId}`, {
+    // Make the PATCH request to toggle the student's restriction status
+    fetch(`${server}/api/v1/users/deactivate/${studentId}`, {
       method: "PATCH",
     })
       .then((response) => response.json())
@@ -47,9 +54,9 @@ function StudentList() {
       });
   };
 
-  if (!hasToken) {
-    return <div>No token available. Please authenticate first.</div>;
-  }
+  // if (!hasToken) {
+  //   return <div>No token available. Please authenticate first.</div>;
+  // }
 
   if (!Array.isArray(students)) {
     return <div>Loading students...</div>;
@@ -64,10 +71,9 @@ function StudentList() {
             <ListItemSecondaryAction>
               <Button
                 variant="contained"
-                color={student.restricted ? "primary" : "default"}
                 onClick={() => toggleRestricted(student.id)}
               >
-                {student.restricted ? "Deactivate" : "Activate"}
+                {student.restricted ? "Restrict" : "Un-restrict"}
               </Button>
             </ListItemSecondaryAction>
           </ListItem>

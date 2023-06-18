@@ -7,29 +7,46 @@ import {
   ListItemSecondaryAction,
   Button,
   Divider,
+  Toolbar,
+  Card,
+  CardContent,
+  Typography,
+  CardActions,
 } from "@mui/material";
+
+const roles = {
+  1: "Student",
+  2: "Faculty",
+  3: "Alumni",
+};
 
 function StudentList() {
   const [students, setStudents] = useState([]);
 
-  useEffect(() => {
+  const getUnverifiedUsers = () => {
     const token = localStorage.getItem("adminToken");
 
-    fetch(`${server}/api/v1/users/restricted`, {
+    fetch(`${server}/api/v1/users/unverified`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
       .then((response) => response.json())
-      .then((data) => setStudents(data))
+      .then((data) => {
+        setStudents(data);
+      })
       .catch((error) => {
         console.log("Error fetching restricted students:", error);
       });
+  };
+
+  useEffect(() => {
+    getUnverifiedUsers();
   }, []);
 
   const verifyStudent = (studentId) => {
     fetch(`${server}/api/v1/users/verify/${studentId}`, {
-      method: "PUT",
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
@@ -37,14 +54,8 @@ function StudentList() {
     })
       .then((response) => {
         if (response.ok) {
-          setStudents((prevStudents) =>
-            prevStudents.map((student) => {
-              if (student.id === studentId) {
-                return { ...student, restricted: false };
-              }
-              return student;
-            })
-          );
+          alert("User verified successfully");
+          getUnverifiedUsers();
         } else {
           console.log("Failed to verify user");
           throw new Error("Failed to verify user");
@@ -57,34 +68,34 @@ function StudentList() {
 
   if (!Array.isArray(students)) {
     console.log(students);
-    return <div>Loading students...</div>;
+    return <div>Loading users...</div>;
   }
   return (
     <List>
-      {students.map((student, index) => (
-        <React.Fragment key={student.id}>
-          <ListItem>
-            <ListItemText primary={student.name} />
-            <ListItemSecondaryAction>
-              {!student.restricted && (
-                <Button variant="contained" disabled>
-                  Verified
-                </Button>
-              )}
-              {student.restricted && (
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => verifyStudent(student.id)}
-                >
-                  Verify
-                </Button>
-              )}
-            </ListItemSecondaryAction>
+      {students.map((student, index) => {
+        return (
+          <ListItem
+            key={index}
+            secondaryAction={
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => verifyStudent(student.id)}
+              >
+                Verify
+              </Button>
+            }
+          >
+            <ListItemText
+              primary={`S.No.: ${index + 1} - Name: ${student.first_name} ${
+                student.last_name
+              }, Roll No. ${student.roll_no}, Email: ${student.email}, Role: ${
+                roles[student.role_id]
+              }`}
+            />
           </ListItem>
-          {index !== students.length - 1 && <Divider />}
-        </React.Fragment>
-      ))}
+        );
+      })}
     </List>
   );
 }
