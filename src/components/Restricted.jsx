@@ -22,7 +22,7 @@ function StudentList() {
   useEffect(() => {
     const token = localStorage.getItem("adminToken");
 
-    fetch(`${server}/api/v1/users/unverified`, {
+    fetch(`${server}/api/v1/users/inactive`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

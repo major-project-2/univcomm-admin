@@ -67,7 +67,9 @@ function StudentList() {
       {students.map((student, index) => (
         <React.Fragment key={student.id}>
           <ListItem>
-            <ListItemText primary={student.name} />
+            <ListItemText
+              primary={student.first_name + "" + student.last_name}
+            />
             <ListItemSecondaryAction>
               <Button
                 variant="contained"
